@@ -1,0 +1,90 @@
+<html>
+<head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.15/proj4.js"></script>
+<script src="bundle.js"></script>
+<script   src="http://code.jquery.com/jquery-3.1.1.slim.min.js"   integrity="sha256-/SIrNqv8h6QGKDuNoLGA4iret+kyesCkHGzVUUV0shc="   crossorigin="anonymous"></script>
+<link rel="stylesheet" type="text/css" href="leaflet.css">
+<link href="https://fonts.googleapis.com/css?family=Noto+Sans" rel="stylesheet">
+<style tye="text/css">
+* {
+	font-family: 'Noto Sans', sans-serif;
+	font-size: 16pt;
+}
+#location {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	background-color: #fff;
+	z-index: 1000;
+	padding: 1ex;
+}
+#info {
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 1000;
+	background-color: #fff;
+	padding: 1ex;
+}
+#map {
+	width: 100%;
+	height: 100%;
+}
+
+body {
+	padding: 0; margin: 0;
+}
+</style>
+</head>
+
+<body>
+<div id="map" style="width: 100%; height: 100%;"></div>
+<div id="location"></div>
+<div id="info">EPSG:3572</div>
+<script>
+    crs = new L.Proj.CRS('EPSG:3572',
+      '+proj=laea +lat_0=90 +lon_0=-150 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs ',
+        {
+          resolutions: [65536, 32768, 16384, 8192, 4096, 2048, 1024, 512, 256, 128, 64, 32, 16]
+        }
+    );
+
+var mymap = L.map('map', {
+	crs: crs,
+	minZoom: 5,
+	maxZoom: 15,
+	worldCopyJump: false,
+	continuousWorld: true,
+	center: [65, -158.5],
+	maxBounds: new L.latLngBounds(
+		L.latLng(71.35, 172.4),
+		L.latLng(51.35, -129.99)
+	)
+}).setView([62.23, -146.05], 8);
+
+L.tileLayer.wms('http://osm.iarc.uaf.edu:8888/wms',
+{
+  layers: 'alaska_osm',
+  srs: 'EPSG:3572',
+  transparent: true,
+  format: 'image/png',
+  version: '1.3',
+  continuousWorld: true,
+  detectRetina: true
+}).addTo(mymap);
+
+var updateMapLocation = function(e) {
+	center = mymap.getCenter();
+	zoom = mymap.getZoom();
+	$('#location').text(
+		center.lat.toFixed(2) + ", "
+		+ center.lng.toFixed(2) + ", "
+		+ zoom
+	);
+}
+
+updateMapLocation();
+mymap.on('move', updateMapLocation);
+</script>
+</body>
+</html>

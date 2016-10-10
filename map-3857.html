@@ -1,0 +1,77 @@
+<html>
+<head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.15/proj4.js"></script>
+<script src="bundle.js"></script>
+<script   src="http://code.jquery.com/jquery-3.1.1.slim.min.js"   integrity="sha256-/SIrNqv8h6QGKDuNoLGA4iret+kyesCkHGzVUUV0shc="   crossorigin="anonymous"></script>
+<link rel="stylesheet" type="text/css" href="leaflet.css">
+<link href="https://fonts.googleapis.com/css?family=Noto+Sans" rel="stylesheet">
+<style tye="text/css">
+* {
+	font-family: 'Noto Sans', sans-serif;
+	font-size: 16pt;
+}
+#location {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	background-color: #fff;
+	z-index: 1000;
+	padding: 1ex;
+}
+#info {
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 1000;
+	background-color: #fff;
+	padding: 1ex;
+}
+
+#map {
+	width: 100%;
+	height: 100%;
+}
+
+body {
+	padding: 0; margin: 0;
+}
+</style>
+</head>
+
+<body>
+<div id="map" style="width: 100%; height: 100%;"></div>
+<div id="location"></div>
+<div id="info">EPSG:3857</div>
+<script>
+
+var mymap = L.map('map', {
+	minZoom: 5,
+	maxZoom: 15,
+	center: [65, -158.5]
+}).setView([62.23, -146.05], 8);
+
+L.tileLayer.wms('http://osm.iarc.uaf.edu:8888/wms',
+{
+  layers: 'alaska_osm_3857',
+  srs: 'EPSG:3857',
+  transparent: true,
+  format: 'image/png',
+  version: '1.3',
+  detectRetina: true
+}).addTo(mymap);
+
+var updateMapLocation = function(e) {
+	center = mymap.getCenter();
+	zoom = mymap.getZoom();
+	$('#location').text(
+		center.lat.toFixed(2) + ", "
+		+ center.lng.toFixed(2) + ", "
+		+ zoom
+	);
+}
+
+updateMapLocation();
+mymap.on('move', updateMapLocation);
+</script>
+</body>
+</html>
